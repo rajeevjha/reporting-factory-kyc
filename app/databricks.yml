@@ -1,0 +1,16 @@
+app:
+  name: KYC Reporting App
+  entrypoint: app/app.py
+  runtime: python3
+  permissions:
+    - group: all_users
+      level: CAN_VIEW
+    - group: kyc_analysts
+      level: CAN_RUN
+environment:
+  variables:
+    CATALOG: kyc_demo
+    WAREHOUSE_ID: <SQL_WAREHOUSE_ID>
+    RAW_VOLUME: dbfs:/Volumes/kyc_demo/bronze/raw
+    REF_VOLUME: dbfs:/Volumes/kyc_demo/bronze/ref
+    JOB_ID: <REPORTING_FACTORY_JOB_ID>

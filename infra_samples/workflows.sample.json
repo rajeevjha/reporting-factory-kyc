@@ -1,0 +1,56 @@
+{
+  "name": "KYC Reporting Factory \u2013 Demo (Finance Small)",
+  "job_clusters": [
+    {
+      "job_cluster_key": "dlt-cluster",
+      "new_cluster": {
+        "spark_version": "13.3.x-scala2.12",
+        "num_workers": 1,
+        "node_type_id": "Standard_DS3_v2",
+        "spark_conf": {
+          "spark.databricks.cluster.profile": "singleNode"
+        }
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "task_key": "run_dlt",
+      "pipeline_task": {
+        "pipeline_id": "${DLT_PIPELINE_ID}"
+      }
+    },
+    {
+      "task_key": "risk_scoring",
+      "depends_on": [
+        {
+          "task_key": "run_dlt"
+        }
+      ],
+      "spark_python_task": {
+        "python_file": "/Workspace/Repos/.../ml/risk_score.py"
+      },
+      "job_cluster_key": "dlt-cluster"
+    },
+    {
+      "task_key": "create_views",
+      "depends_on": [
+        {
+          "task_key": "risk_scoring"
+        }
+      ],
+      "sql_task": {
+        "query": {
+          "query_text": "--file:/Workspace/Repos/.../sql/gold_views.sql"
+        },
+        "warehouse_id": "<SQL_WAREHOUSE_ID>"
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "name": "approve",
+      "default": "false"
+    }
+  ]
+}
